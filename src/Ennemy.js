@@ -5,7 +5,7 @@ class Ennemy extends Positionnable {
     constructor( game ){
         super( 0, 0, 40 )
         this.game = game
-        this.speed = 2
+        this.gain = 1
         this.lifeMax = 2
         this.setPosition()
     }
@@ -23,12 +23,27 @@ class Ennemy extends Positionnable {
         }
         if(this.life <= 0){
             this.setPosition()
-            this.game.player.score ++
+            this.game.player.score += this.gain
+        }
+    }
+
+    draw(){
+        ellipse(
+            this.x,
+            this.y,
+            this.currentRadius
+        )
+        if(!this.isOnScreen()){
+            ellipse(
+                this.x > width * .5 ? width * .5 : this.x < width * -.5 ? width * -.5 : this.x,
+                this.y > height * .5 ? height * .5 : this.y < height * -.5 ? height * -.5 : this.y,
+                (this.currentRadius + 1) / 3
+            )
         }
     }
 
     get currentRadius(){
-        return map(this.life, 0, this.lifeMax, 0, this.radius)
+        return Math.min(map(this.life, 0, this.lifeMax, 0, this.radius),150)
     }
 
     setPosition(){

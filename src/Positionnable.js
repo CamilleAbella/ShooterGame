@@ -18,8 +18,8 @@ class Positionnable {
     }
 
     placeOutOfLimits(){
-        this.x = width * 5
-        this.y = height * 5
+        this.x = width * 10
+        this.y = height * 10
     }
 
     isOutOfLimits(){

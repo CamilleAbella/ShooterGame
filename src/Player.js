@@ -101,7 +101,7 @@ class Player extends Positionnable {
 
     draw(){
         this.shoots.forEach( shoot => shoot.draw() )
-        fill(0,0,255)
+        fill(255)
         ellipse(
             this.x,
             this.y,

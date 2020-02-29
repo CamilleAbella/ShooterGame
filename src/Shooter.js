@@ -2,6 +2,7 @@
 class Shooter {
 
     constructor(){
+        this.maxEnnemyCount = 40
         this.reset()
     }
 
@@ -13,28 +14,32 @@ class Shooter {
         this.ennemies = []
         this.bonus = []
         for(let i=0; i<this.ennemyCount; i++){
-            this.ennemies.push(new YellowEnnemy(this))
+            this.ennemies.push(new Blob(this))
         }
     }
 
     step(){
         this.bonus = this.bonus.filter( bonus => !bonus.isOutOfLimits() )
-        this.ennemyCount = map(this.player.score, 0, 10, 5, 20)
+        this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
+        this.ennemyCount = Math.min(map(this.player.score, 0, 50, 5, 20), this.maxEnnemyCount)
         while(this.ennemies.length < this.ennemyCount)
-            this.ennemies.push(new YellowEnnemy(this))
+            this.ennemies.push(new Blob(this))
         if(this.gamerate.canTrigger(true)){
             this.ennemies.forEach( ennemy => ennemy.step() )
             this.player.step()
         }
-        this.ennemies.forEach( ennemy => {
-            this.ennemies.forEach( ennemy2 => {
-                if(this.areOnContact( ennemy, ennemy2 ) && ennemy !== ennemy2){
-                    ennemy.lif += ennemy2.life
-                    ennemy2.placeOutOfLimits()
+        const blobs = this.ennemies.filter( ennemy => ennemy instanceof Blob )
+        blobs.forEach( blob => {
+            if(!blob.isOutOfLimits())
+            blobs.forEach( blob2 => {
+                if(!blob2.isOutOfLimits())
+                if(this.areOnContact( blob, blob2 ) && blob !== blob2){
+                    blob.life += blob2.life
+                    blob.gain += blob2.gain
+                    blob2.placeOutOfLimits()
                 }
             })
         })
-        this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
         if(Math.random() < .001)
         this.bonus.push(new Bonus(this))
     }
@@ -47,6 +52,10 @@ class Shooter {
 
     draw(){
         background(0)
+        fill(255)
+        textAlign(CENTER)
+        textSize(25)
+        text(`Score : ${this.player.score}`, width / 2, 50)
         translate(
             width * .5, 
             height * .5
