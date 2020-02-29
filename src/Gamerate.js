@@ -1,0 +1,20 @@
+
+
+class Gamerate {
+
+    constructor( rate ){
+        this.lastRate = Date.now()
+        this.rate = rate || 10
+    }
+
+    canTrigger( trigger ){
+        const can = Date.now() > this.lastRate + this.rate
+        if(can) if(trigger) this.trigger()
+        return can
+    }
+
+    trigger(){
+        this.lastRate = Date.now()
+    }
+
+}
