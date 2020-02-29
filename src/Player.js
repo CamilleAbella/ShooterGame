@@ -9,10 +9,10 @@ class Player extends Positionnable {
         this.score = 0
         this.shoots = []
         this.shootrate = new Gamerate(250)
-        this.shootspeed = 20
+        this.shootspeed = 15
         this.speedX = 0
         this.speedY = 0
-        this.speedMax = 15
+        this.speedMax = 10
         this.acc = 3
         this.desc = .7
     }

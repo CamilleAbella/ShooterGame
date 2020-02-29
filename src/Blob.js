@@ -4,7 +4,7 @@ class Blob extends Ennemy {
 
     constructor( game ){
         super( game )
-        this.speed = 1
+        this.speed = 3
     }
 
     step(){

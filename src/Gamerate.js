@@ -4,7 +4,7 @@ class Gamerate {
 
     constructor( rate ){
         this.lastRate = Date.now()
-        this.rate = rate || 10
+        this.rate = rate
     }
 
     canTrigger( trigger ){

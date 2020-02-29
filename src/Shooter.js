@@ -10,7 +10,7 @@ class Shooter {
         this.keys = {}
         this.ennemyCount = 5
         this.player = new Player(this)
-        this.gamerate = new Gamerate()
+        this.rate = new Gamerate(30)
         this.ennemies = []
         this.bonus = []
         for(let i=0; i<this.ennemyCount; i++){
@@ -24,7 +24,7 @@ class Shooter {
         this.ennemyCount = Math.min(map(this.player.score, 0, 50, 5, 20), this.maxEnnemyCount)
         while(this.ennemies.length < this.ennemyCount)
             this.ennemies.push(new Blob(this))
-        if(this.gamerate.canTrigger(true)){
+        if(this.rate.canTrigger(true)){
             this.ennemies.forEach( ennemy => ennemy.step() )
             this.player.step()
         }

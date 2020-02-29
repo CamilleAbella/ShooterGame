@@ -1,8 +1,14 @@
 
 const types = [
-    'life',
-    'drill',
-    'double'
+    'life',     // [consomable] soigne completement le joueur
+    'drill',    // les tirs traversent [LEVEL] ennemis
+    'star',     // [consomable] tire de tous les cotés pendant 30 secondes
+    'carnage',  // [consomable] tue tous les ennemis à l'écran
+    'falcon',   // les tirs suivent leur cible (level 2 : visée auto)
+    'imperio',  // les ennemis ayant [LEVEL] pv meurent avant de vous toucher
+    'shotgun',  // double les dégat causés par les tirs
+    'bazooka',  // double la taille des tirs
+    'minigun',  // double la cadence de tir
 ]
 
 class Bonus extends Positionnable {
