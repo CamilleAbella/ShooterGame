@@ -21,7 +21,9 @@ class Player extends Positionnable {
     }
 
     addPassive( passive ){
-        const existant = this.passives.find( p => p === passive )
+        const existant = this.passives.find( p => {
+            return p.constructor.name === passive.constructor.name 
+        })
         if(existant){
             existant.level ++
         }else{
@@ -32,7 +34,9 @@ class Player extends Positionnable {
     }
 
     addConsomable( consomable ){
-        const existant = this.consomables.find( c => c === consomable )
+        const existant = this.consomables.find( c => {
+            return c.constructor.name === consomable.constructor.name
+        })
         if(existant){
             existant.quantity ++
         }else{

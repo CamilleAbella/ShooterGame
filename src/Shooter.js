@@ -49,7 +49,7 @@ class Shooter {
                 }
             })
         })
-        if(Math.random() < .001)
+        if(Math.random() < .005)
         this.bonus.push(
             new existingBonus[Math.floor(Math.random()*existingBonus.length)](this)
         )
