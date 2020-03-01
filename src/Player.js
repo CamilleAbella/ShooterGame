@@ -7,7 +7,9 @@ class Player extends Positionnable {
         this.lifeMax = 10
         this.life = this.lifeMax
         this.score = 0
+        this.powaKeys = ['&','é','"',"'",'(','-','è']
         this.consomables = []
+        this.passives = []
         this.shoots = []
         this.shootrate = new Gamerate(500)
         this.shootspeed = 15
@@ -16,6 +18,28 @@ class Player extends Positionnable {
         this.speedMax = 10
         this.acc = 3
         this.desc = .7
+    }
+
+    addPassive( passive ){
+        const existant = this.passives.find( p => p === passive )
+        if(existant){
+            existant.level ++
+        }else{
+            if(!passive.level)
+            passive.level = 1
+            this.passives.push(passive)
+        }
+    }
+
+    addConsomable( consomable ){
+        const existant = this.consomables.find( c => c === consomable )
+        if(existant){
+            existant.quantity ++
+        }else{
+            if(!consomable.quantity)
+            consomable.quantity = 1
+            this.consomables.push(consomable)
+        }
     }
 
     step(){
@@ -96,6 +120,19 @@ class Player extends Positionnable {
 
     }
 
+    keyPressed(){
+        this.powaKeys.forEach( (pk,i) => {
+            if(key === pk && this.consomables[i]){
+                this.consomables[i].exec(this.game)
+                this.consomables[i].quantity --
+                if(this.consomables[i].quantity <= 0)
+                this.consomables = this.consomables.filter( c => {
+                    return c !== this.consomables[i]
+                })
+            }
+        })
+    }
+
     draw(){
         this.shoots.forEach( shoot => shoot.draw() )
         fill(255)
@@ -123,6 +160,46 @@ class Player extends Positionnable {
             14,
             5
         )
+        const bonusLength = this.consomables.length + this.passives.length
+        if(bonusLength > 0){
+            fill(0,100)
+            stroke(255)
+            strokeWeight(1)
+            const _width = bonusLength * 14
+            rect(
+                this.x - _width * .5,
+                this.y + 36,
+                _width,
+                14,
+                5
+            )
+            noStroke()
+            this.bonus = [ ...this.consomables, ...this.passives ]
+            this.bonus.forEach( (bonus, index) => {
+                fill(200,100)
+                rect(
+                    this.x - _width * .5 + index * 14,
+                    this.y + 36,
+                    14,
+                    14,
+                    5
+                )
+                bonus.quantity ? fill(255,0,190) : fill(190,0,255)
+                bonus.shape(
+                    this.x - _width * .5 + index * 14,
+                    this.y + 36,
+                    14,
+                    14
+                )
+                for(let i=0; i<(bonus.quantity||bonus.level); i++){
+                    ellipse(
+                        this.x - _width * .5 + 7 + index * 14,
+                        this.y + 57 + i * 14,
+                        5
+                    )
+                }
+            })
+        }
         
     }
 

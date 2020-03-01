@@ -1,4 +1,8 @@
 
+const existingBonus = [
+    Heal, Drill
+]
+
 class Shooter {
 
     constructor(){
@@ -11,7 +15,8 @@ class Shooter {
         this.ennemyCount = 5
         this.player = new Player(this)
         this.rate = new Gamerate(30)
-        this.background = new Background(40)
+        this.background = new Background(30,0,1)
+        this.foreground = new Background(10,1,2)
         this.ennemies = []
         this.bonus = []
         for(let i=0; i<this.ennemyCount; i++){
@@ -21,6 +26,7 @@ class Shooter {
 
     step(){
         this.background.step()
+        this.foreground.step()
         this.bonus.forEach( bonus => bonus.step() )
         this.bonus = this.bonus.filter( bonus => !bonus.isOutOfLimits() )
         this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
@@ -44,11 +50,14 @@ class Shooter {
             })
         })
         if(Math.random() < .001)
-        this.bonus.push(new Heal(this))
+        this.bonus.push(
+            new existingBonus[Math.floor(Math.random()*existingBonus.length)](this)
+        )
     }
 
     move( x, y ){
         this.background.move( x, y )
+        this.foreground.move( x, y )
         this.ennemies.forEach( ennemy => ennemy.move(x,y) )
         this.player.shoots.forEach( shoot => shoot.move(x,y) )
         this.bonus.forEach( bonus => bonus.move(x,y) )
@@ -68,10 +77,13 @@ class Shooter {
         this.ennemies.forEach( ennemy => ennemy.draw() )
         this.bonus.forEach( bonus => bonus.draw() )
         this.player.draw()
+        this.foreground.draw()
     }
 
-    keyPressed(){ this.keys[key] = true }
     keyReleased(){ this.keys[key] = false }
+    keyPressed(){ this.keys[key] = true 
+        this.player.keyPressed()
+    }
 
     moveKeysIsNotPressed(){
         for(const _key in this.keys)

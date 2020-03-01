@@ -13,8 +13,7 @@ class Ennemy extends Positionnable {
     step(){
         this.game.player.shoots.forEach( shoot => {
             if(this.game.areOnContact(shoot,this)){
-                shoot.placeOutOfLimits()
-                this.life --
+                if(shoot.handleShoot(this)) this.life --
             }
         })
         if(this.game.areOnContact(this,this.game.player)){
@@ -28,23 +27,23 @@ class Ennemy extends Positionnable {
     }
 
     draw(){
-        fill(180)
+        fill(255,0,100)
         if(!this.isOnScreen()){
             ellipse(
                 this.x > width * .5 ? width * .5 : this.x < width * -.5 ? width * -.5 : this.x,
                 this.y > height * .5 ? height * .5 : this.y < height * -.5 ? height * -.5 : this.y,
                 (this.currentRadius + 1) / 3
             )
-        }else{
-            stroke(255)
-            strokeWeight(this.gain)
-            ellipse(
-                this.x,
-                this.y,
-                this.currentRadius
-            )
-            noStroke()
         }
+        stroke(200,0,200)
+        strokeWeight(this.gain)
+        ellipse(
+            this.x,
+            this.y,
+            this.currentRadius
+        )
+        noStroke()
+        
     }
 
     get currentRadius(){

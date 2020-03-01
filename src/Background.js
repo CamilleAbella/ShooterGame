@@ -1,8 +1,10 @@
 
 class Background extends Positionnable {
 
-    constructor( particleCount ){
+    constructor( particleCount, min, max ){
         super( 0, 0 )
+        this.min = min
+        this.max = max
         this.particleCount = particleCount
         this.particles = []
         while(this.particles.length < this.particleCount){
@@ -32,13 +34,14 @@ class Particle extends Positionnable {
         this.reset()
     }
 
-    get color(){
-        return map( this.z, 0, 1, 5, 50 ) * this.intensity
+    get opacity(){
+        return map( this.z, 0, 1, 20, 80 ) * this.intensity
     }
 
     reset(){
+        this.color = [random(100,255),0,random(100,255)]
         this.intensity = 0
-        this.z = Math.random()
+        this.z = random( this.background.min, this.background.max )
         this.x = random( -width, width )
         this.y = random( -height, height )
     }
@@ -52,13 +55,16 @@ class Particle extends Positionnable {
 
     step(){
         if(this.intensity < 1)
-        this.intensity += .02
+        this.intensity += .023
         if(!this.isOnScreen())
         this.reset()
     }
 
     draw(){
-        fill(this.color)
+        fill(
+            ...this.color,
+            this.opacity
+        )
         ellipse(
             this.x,
             this.y,
