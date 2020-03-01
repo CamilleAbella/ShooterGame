@@ -23,13 +23,4 @@ class Blob extends Ennemy {
         )
     }
 
-    draw(){
-        fill(255,255,0)
-        super.draw()
-        fill(0)
-        textAlign(CENTER,CENTER)
-        textSize(30)
-        text(this.gain, this.x, this.y)
-    }
-
 }

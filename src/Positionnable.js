@@ -1,11 +1,14 @@
 
 class Positionnable {
 
-    constructor( x, y, radius ){
-        this.radius = radius
+    constructor( x, y, z ){
+        this.z = z
         this.x = x
         this.y = y
     }
+
+    get radius(){ return this.z }
+    set radius( z ){ this.z = z }
 
     move( x, y ){
         this.x += x
@@ -31,12 +34,13 @@ class Positionnable {
         )
     }
 
-    isOnScreen(){
+    isOnScreen( ignoreRadius ){
+        const radius = ignoreRadius ? 0 : this.radius
         return (
-            this.x + this.radius > width * -.5 && 
-            this.x - this.radius < width * .5 &&
-            this.y + this.radius > height * -.5 && 
-            this.y - this.radius < height * .5
+            this.x + radius > width * -.5 && 
+            this.x - radius < width * .5 &&
+            this.y + radius > height * -.5 && 
+            this.y - radius < height * .5
         )
     }
 

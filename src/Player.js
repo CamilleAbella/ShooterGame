@@ -7,8 +7,9 @@ class Player extends Positionnable {
         this.lifeMax = 10
         this.life = this.lifeMax
         this.score = 0
+        this.consomables = []
         this.shoots = []
-        this.shootrate = new Gamerate(250)
+        this.shootrate = new Gamerate(500)
         this.shootspeed = 15
         this.speedX = 0
         this.speedY = 0
@@ -62,8 +63,8 @@ class Player extends Positionnable {
 
         // on déplace le joueur
         this.place(
-            this.speedX,
-            this.speedY
+            this.speedX * .5,
+            this.speedY * .5
         )
         this.game.move(
             this.speedX * -1,
@@ -74,8 +75,8 @@ class Player extends Positionnable {
 
         if(this.shootrate.canTrigger()){
             const direction = {
-                x: map(this.speedX, this.speedMax * -1, this.speedMax, -.5, .5),
-                y: map(this.speedY, this.speedMax * -1, this.speedMax, -.5, .5)
+                x: map(this.speedX * .5, this.speedMax * -.5, this.speedMax * .5, -.5, .5),
+                y: map(this.speedY * .5, this.speedMax * -.5, this.speedMax * .5, -.5, .5)
             }
             if(keys.z) direction.y -= 1 
             if(keys.q) direction.x -= 1
@@ -95,18 +96,34 @@ class Player extends Positionnable {
 
     }
 
-    get currentRadius(){
-        return map(this.life, 0, this.lifeMax, 0, this.radius)
-    }
-
     draw(){
         this.shoots.forEach( shoot => shoot.draw() )
         fill(255)
         ellipse(
             this.x,
             this.y,
-            this.currentRadius
+            this.radius
         )
+        fill(0,100)
+        stroke(255)
+        strokeWeight(1)
+        rect(
+            this.x - 40,
+            this.y - 50,
+            80,
+            14,
+            5
+        )
+        noStroke()
+        fill(200,100)
+        rect(
+            this.x - 40,
+            this.y - 50,
+            map( this.life, 0, this.lifeMax, 0, 80 ),
+            14,
+            5
+        )
+        
     }
 
 }

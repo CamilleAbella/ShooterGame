@@ -11,6 +11,7 @@ class Shooter {
         this.ennemyCount = 5
         this.player = new Player(this)
         this.rate = new Gamerate(30)
+        this.background = new Background(40)
         this.ennemies = []
         this.bonus = []
         for(let i=0; i<this.ennemyCount; i++){
@@ -19,6 +20,8 @@ class Shooter {
     }
 
     step(){
+        this.background.step()
+        this.bonus.forEach( bonus => bonus.step() )
         this.bonus = this.bonus.filter( bonus => !bonus.isOutOfLimits() )
         this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
         this.ennemyCount = Math.min(map(this.player.score, 0, 50, 5, 20), this.maxEnnemyCount)
@@ -41,10 +44,11 @@ class Shooter {
             })
         })
         if(Math.random() < .001)
-        this.bonus.push(new Bonus(this))
+        this.bonus.push(new Heal(this))
     }
 
     move( x, y ){
+        this.background.move( x, y )
         this.ennemies.forEach( ennemy => ennemy.move(x,y) )
         this.player.shoots.forEach( shoot => shoot.move(x,y) )
         this.bonus.forEach( bonus => bonus.move(x,y) )
@@ -52,14 +56,15 @@ class Shooter {
 
     draw(){
         background(0)
-        fill(255)
-        textAlign(CENTER)
-        textSize(25)
-        text(`Score : ${this.player.score}`, width / 2, 50)
         translate(
             width * .5, 
             height * .5
         )
+        this.background.draw()
+        fill(255)
+        textAlign(CENTER)
+        textSize(25)
+        text(`Score : ${this.player.score}`, 0, height * -.5 + 50)
         this.ennemies.forEach( ennemy => ennemy.draw() )
         this.bonus.forEach( bonus => bonus.draw() )
         this.player.draw()

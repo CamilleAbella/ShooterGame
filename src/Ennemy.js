@@ -28,17 +28,22 @@ class Ennemy extends Positionnable {
     }
 
     draw(){
-        ellipse(
-            this.x,
-            this.y,
-            this.currentRadius
-        )
+        fill(180)
         if(!this.isOnScreen()){
             ellipse(
                 this.x > width * .5 ? width * .5 : this.x < width * -.5 ? width * -.5 : this.x,
                 this.y > height * .5 ? height * .5 : this.y < height * -.5 ? height * -.5 : this.y,
                 (this.currentRadius + 1) / 3
             )
+        }else{
+            stroke(255)
+            strokeWeight(this.gain)
+            ellipse(
+                this.x,
+                this.y,
+                this.currentRadius
+            )
+            noStroke()
         }
     }
 
