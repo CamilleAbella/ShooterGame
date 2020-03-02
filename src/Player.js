@@ -7,6 +7,7 @@ class Player extends Positionnable {
         this.lifeMax = 10
         this.life = this.lifeMax
         this.score = 0
+        this.highscore = JSON.parse(localStorage.getItem('shooter')).highscore
         this.powaKeys = ['&','é','"',"'",'(','-','è']
         this.consomables = []
         this.passives = []
@@ -69,6 +70,11 @@ class Player extends Positionnable {
         // MORT ?
 
         if(this.life <= 0){
+            if(this.score > this.highscore){
+                const storage = JSON.parse(localStorage.getItem('shooter'))
+                storage.highscore = this.score
+                localStorage.setItem('shooter',JSON.stringify(storage))
+            }
             this.game.reset()
         }
 
@@ -214,7 +220,12 @@ class Player extends Positionnable {
             5
         )
         noStroke()
-        fill(200,100)
+        fill(
+            map( this.life, 0, this.lifeMax, 255, 50 ),
+            map( this.life, 0, this.lifeMax, 50, 255 ),
+            50,
+            200
+        )
         rect(
             this.x - 40,
             this.y - 50,

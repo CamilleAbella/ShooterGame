@@ -1,6 +1,6 @@
 
 
-class Aya extends Ennemy {
+class Aya extends Enemy {
 
     constructor( game ){
         super( game )
