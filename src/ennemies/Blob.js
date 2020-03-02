@@ -4,23 +4,26 @@ class Blob extends Ennemy {
 
     constructor( game ){
         super( game )
-        this.speed = 3
+        this.speed = 2
     }
 
     step(){
-        super.step()
-        const angle = degrees(
-            atan2(
-                this.game.player.y - this.y,
-                this.game.player.x - this.x
-            ) + PI
-        )
-        const speedX = this.speed * cos(radians(angle))
-        const speedY = this.speed * sin(radians(angle))
-        this.move(
-            speedX * -2,
-            speedY * -2
-        )
+        if(!this.isOutOfLimits()){
+            super.step()
+            this.follow(
+                this.game.player,
+                this.speed
+            )
+            this.game.ennemies.forEach( ennemy => {
+                if(!ennemy.isOutOfLimits())
+                    if(this.life > ennemy.life)
+                        if(this.game.areOnContact( this, ennemy ) && this !== ennemy ){
+                            this.life += ennemy.life
+                            this.gain += ennemy.gain
+                            ennemy.placeOutOfLimits()
+                        }
+            })
+        }
     }
 
 }

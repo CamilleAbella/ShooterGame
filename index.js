@@ -1,5 +1,5 @@
 
-let shooter
+var shooter
 
 function setup(){
     createCanvas(windowWidth, windowHeight)
@@ -12,11 +12,11 @@ function draw(){
 }
 
 function keyPressed(){
-    shooter.keyPressed()
+    shooter.keyPressed(key)
 }
 
 function keyReleased(){
-    shooter.keyReleased()
+    shooter.keyReleased(key)
 }
 
 function windowResized() {

@@ -48,8 +48,8 @@ class Particle extends Positionnable {
 
     move( x, y ){
         super.move(
-            x * this.z,
-            y * this.z
+            x * (this.z / 2),
+            y * (this.z / 2)
         )
     }
 

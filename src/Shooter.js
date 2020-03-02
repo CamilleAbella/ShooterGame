@@ -1,16 +1,24 @@
 
+const existingEnnemies = [
+    Aya, Blob
+]
+
 const existingBonus = [
-    Heal, Drill
+    Heal, Drill, Star
 ]
 
 class Shooter {
 
     constructor(){
-        this.maxEnnemyCount = 40
+        this.keysImage = loadImage('img/keys.png')
+        this.showKeysStepsInit = 200
+        this.maxEnnemyCount = 30
         this.reset()
     }
 
     reset(){
+        this.showKeys = true
+        this.showKeysSteps = this.showKeysStepsInit
         this.keys = {}
         this.ennemyCount = 5
         this.player = new Player(this)
@@ -20,39 +28,42 @@ class Shooter {
         this.ennemies = []
         this.bonus = []
         for(let i=0; i<this.ennemyCount; i++){
-            this.ennemies.push(new Blob(this))
+            this.ennemies.push(
+                new existingEnnemies[Math.floor(Math.random()*existingEnnemies.length)](this)
+            )
         }
     }
 
     step(){
-        this.background.step()
-        this.foreground.step()
-        this.bonus.forEach( bonus => bonus.step() )
-        this.bonus = this.bonus.filter( bonus => !bonus.isOutOfLimits() )
-        this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
-        this.ennemyCount = Math.min(map(this.player.score, 0, 50, 5, 20), this.maxEnnemyCount)
-        while(this.ennemies.length < this.ennemyCount)
-            this.ennemies.push(new Blob(this))
-        if(this.rate.canTrigger(true)){
-            this.ennemies.forEach( ennemy => ennemy.step() )
-            this.player.step()
+        if(this.showKeys){
+            if (
+                !this.moveKeysIsNotPressed() ||
+                !this.shootKeysIsNotPressed()
+            ){
+                this.showKeys = false
+            }
+        }else if(this.showKeysSteps > 0){
+            this.showKeysSteps --
+        }else{
+            this.background.step()
+            this.foreground.step()
+            this.bonus.forEach( bonus => bonus.step() )
+            this.bonus = this.bonus.filter( bonus => !bonus.isOutOfLimits() )
+            this.ennemies = this.ennemies.filter( ennemy => !ennemy.isOutOfLimits() )
+            this.ennemyCount = Math.floor(Math.min(map(this.player.score, 0, 100, 4, 20), this.maxEnnemyCount))
+            while(this.ennemies.length < this.ennemyCount)
+                this.ennemies.push(
+                    new existingEnnemies[Math.floor(Math.random()*existingEnnemies.length)](this)
+                )
+            if(this.rate.canTrigger(true)) {
+                this.ennemies.forEach( ennemy => ennemy.step() )
+                this.player.step()
+            }
+            if(Math.random() < .05)
+                this.bonus.push(
+                    new existingBonus[Math.floor(Math.random()*existingBonus.length)](this)
+                )
         }
-        const blobs = this.ennemies.filter( ennemy => ennemy instanceof Blob )
-        blobs.forEach( blob => {
-            if(!blob.isOutOfLimits())
-            blobs.forEach( blob2 => {
-                if(!blob2.isOutOfLimits())
-                if(this.areOnContact( blob, blob2 ) && blob !== blob2){
-                    blob.life += blob2.life
-                    blob.gain += blob2.gain
-                    blob2.placeOutOfLimits()
-                }
-            })
-        })
-        if(Math.random() < .005)
-        this.bonus.push(
-            new existingBonus[Math.floor(Math.random()*existingBonus.length)](this)
-        )
     }
 
     move( x, y ){
@@ -70,19 +81,23 @@ class Shooter {
             height * .5
         )
         this.background.draw()
-        fill(255)
-        textAlign(CENTER)
-        textSize(25)
-        text(`Score : ${this.player.score}`, 0, height * -.5 + 50)
         this.ennemies.forEach( ennemy => ennemy.draw() )
         this.bonus.forEach( bonus => bonus.draw() )
         this.player.draw()
         this.foreground.draw()
+        fill(255)
+        textAlign(CENTER)
+        textSize(25)
+        text(`Score : ${this.player.score}`, 0, height * -.5 + 50)
+        if(this.showKeys){
+            tint(255, map(this.showKeysSteps,this.showKeysStepsInit,0,255,0))
+            image(this.keysImage,-400,-300)
+        }
     }
 
-    keyReleased(){ this.keys[key] = false }
-    keyPressed(){ this.keys[key] = true 
-        this.player.keyPressed()
+    keyReleased(_key){ this.keys[_key] = false }
+    keyPressed(_key){ this.keys[_key] = true
+        this.player.keyPressed(_key)
     }
 
     moveKeysIsNotPressed(){

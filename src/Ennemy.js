@@ -27,7 +27,11 @@ class Ennemy extends Positionnable {
     }
 
     draw(){
-        fill(255,0,100)
+        fill(
+            Math.min(map(this.gain, 1, 10, 100, 255),255),
+            80,
+            Math.max(map(this.gain, 1, 10, 255, 100),100)
+        )
         if(!this.isOnScreen()){
             ellipse(
                 this.x > width * .5 ? width * .5 : this.x < width * -.5 ? width * -.5 : this.x,
@@ -35,19 +39,31 @@ class Ennemy extends Positionnable {
                 (this.currentRadius + 1) / 3
             )
         }
-        stroke(200,0,200)
-        strokeWeight(this.gain)
         ellipse(
             this.x,
             this.y,
             this.currentRadius
         )
-        noStroke()
         
     }
 
     get currentRadius(){
         return Math.min(map(this.life, 0, this.lifeMax, 0, this.radius),150)
+    }
+
+    follow( positionnable, speed ){
+        const angle = degrees(
+            atan2(
+                positionnable.y - this.y,
+                positionnable.x - this.x
+            ) + PI
+        )
+        const speedX = speed * cos(radians(angle))
+        const speedY = speed * sin(radians(angle))
+        this.move(
+            speedX * -2,
+            speedY * -2
+        )
     }
 
     setPosition(){

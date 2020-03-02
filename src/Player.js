@@ -11,6 +11,7 @@ class Player extends Positionnable {
         this.consomables = []
         this.passives = []
         this.shoots = []
+        this.temporary = {}
         this.shootrate = new Gamerate(500)
         this.shootspeed = 15
         this.speedX = 0
@@ -20,12 +21,29 @@ class Player extends Positionnable {
         this.desc = .7
     }
 
+    setTemporary( flag, duration, shape ){
+        if(
+            !this.temporary[flag] ||
+            this.temporary[flag].timeout < Date.now()
+        )
+            this.temporary[flag] = { shape,
+                triggerTime: Date.now(),
+                timeout: Date.now() + duration
+            }
+        else this.temporary[flag].timeout += duration
+    }
+
+    getTemporary( flag ){
+        if(!this.temporary[flag]) return false
+        return this.temporary[flag].timeout > Date.now()
+    }
+
     addPassive( passive ){
-        const existant = this.passives.find( p => {
+        const exists = this.passives.find( p => {
             return p.constructor.name === passive.constructor.name 
         })
-        if(existant){
-            existant.level ++
+        if(exists){
+            exists.level ++
         }else{
             if(!passive.level)
             passive.level = 1
@@ -34,11 +52,11 @@ class Player extends Positionnable {
     }
 
     addConsomable( consomable ){
-        const existant = this.consomables.find( c => {
+        const exists = this.consomables.find( c => {
             return c.constructor.name === consomable.constructor.name
         })
-        if(existant){
-            existant.quantity ++
+        if(exists){
+            exists.quantity ++
         }else{
             if(!consomable.quantity)
             consomable.quantity = 1
@@ -89,7 +107,6 @@ class Player extends Positionnable {
         if(this.speedY < .1 && this.speedY > -.1)
         this.speedY = 0
 
-        // on déplace le joueur
         this.place(
             this.speedX * .5,
             this.speedY * .5
@@ -106,17 +123,58 @@ class Player extends Positionnable {
                 x: map(this.speedX * .5, this.speedMax * -.5, this.speedMax * .5, -.5, .5),
                 y: map(this.speedY * .5, this.speedMax * -.5, this.speedMax * .5, -.5, .5)
             }
-            if(keys.z) direction.y -= 1 
-            if(keys.q) direction.x -= 1
-            if(keys.s) direction.y += 1
-            if(keys.d) direction.x += 1
-            if(!this.game.shootKeysIsNotPressed()){
-                this.shootrate.trigger()
-                this.shoots.push( new Shoot( this,
-                    direction.x,
-                    direction.y
-                ))
+            if(this.getTemporary('star')){
+                if(!this.game.shootKeysIsNotPressed()){
+                    this.shootrate.trigger()
+                    this.shoots.push(
+                        new Shoot( this,
+                            1 + direction.x,
+                            direction.y
+                        ),
+                        new Shoot( this,
+                            -1 + direction.x,
+                            direction.y
+                        ),
+                        new Shoot( this,
+                            direction.x,
+                            1 + direction.y
+                        ),
+                        new Shoot( this,
+                            direction.x,
+                            -1 + direction.y
+                        ),
+                        new Shoot( this,
+                            1 + direction.x,
+                            1 + direction.y
+                        ),
+                        new Shoot( this,
+                            -1 + direction.x,
+                            1 + direction.y
+                        ),
+                        new Shoot( this,
+                            1 + direction.x,
+                            -1 + direction.y
+                        ),
+                        new Shoot( this,
+                            -1 + direction.x,
+                            -1 + direction.y
+                        )
+                    )
+                }
+            }else{
+                if(keys.z) direction.y -= 1
+                if(keys.q) direction.x -= 1
+                if(keys.s) direction.y += 1
+                if(keys.d) direction.x += 1
+                if(!this.game.shootKeysIsNotPressed()){
+                    this.shootrate.trigger()
+                    this.shoots.push( new Shoot( this,
+                        direction.x,
+                        direction.y
+                    ))
+                }
             }
+
         }
 
         this.shoots = this.shoots.filter( shoot => !shoot.isOutOfLimits() )
@@ -124,14 +182,14 @@ class Player extends Positionnable {
 
     }
 
-    keyPressed(){
+    keyPressed(_key){
         this.powaKeys.forEach( (pk,i) => {
-            if(key === pk && this.consomables[i]){
+            if(_key === pk && this.consomables[i]){
                 this.consomables[i].exec(this.game)
                 this.consomables[i].quantity --
                 if(this.consomables[i].quantity <= 0)
                 this.consomables = this.consomables.filter( c => {
-                    return c !== this.consomables[i]
+                    return c.constructor.name !== this.consomables[i].constructor.name
                 })
             }
         })
@@ -164,6 +222,48 @@ class Player extends Positionnable {
             14,
             5
         )
+        let flagIndex = 0
+        for(const flag in this.temporary){
+            if(this.getTemporary(flag)){
+                const temp = this.temporary[flag]
+                fill(0,100)
+                stroke(255)
+                strokeWeight(1)
+                rect(
+                    this.x - 40,
+                    this.y - (64 + 14 * flagIndex),
+                    80,
+                    14,
+                    5
+                )
+                noStroke()
+                fill(255,0,190)
+                rect(
+                    (this.x - 40) + map( Date.now(), temp.triggerTime, temp.timeout, 0, 66 ),
+                    this.y - (64 + 14 * flagIndex),
+                    map( Date.now(), temp.triggerTime, temp.timeout, 66, 0 ),
+                    14,
+                    5
+                )
+                fill(200,100)
+                rect(
+                    this.x + 26,
+                    this.y - (64 + 14 * flagIndex),
+                    14,
+                    14,
+                    5
+                )
+                fill(255,0,190)
+                temp.shape(
+                    this.x + 26,
+                    this.y - (64 + 14 * flagIndex),
+                    14,
+                    14,
+                    5
+                )
+                flagIndex ++
+            }
+        }
         const bonusLength = this.consomables.length + this.passives.length
         if(bonusLength > 0){
             fill(0,100)
